@@ -3,29 +3,17 @@ package View;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JSplitPane;
-import java.awt.BorderLayout;
-import javax.swing.JInternalFrame;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+
 import javax.swing.JPanel;
-import javax.swing.BoxLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-
-import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.GridLayout;
+
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.JTable;
 import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -37,7 +25,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.awt.event.ActionEvent;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -46,8 +33,9 @@ import javax.swing.table.TableModel;
 
 import com.mysql.jdbc.Statement;
 
+import ModulController.AutoCar;
 import ModulController.Chauffeur;
-import ModulController.CongeDate;
+import ModulController.Ligne;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -57,35 +45,22 @@ public class Main {
 	
 	private static Vector<Vector<Object>> data;
 	private static ArrayList<Integer> colmunIds;
+	private JPanel frameFatherContainer;
 	private JFrame frameGrandFatherContainer;
-	private JPanel panelAutocarSideButton;
-	private JLabel lblChauffeur;
 	private Color menuColorDefault;
-	private JPanel panelAgenceSideButton;
-	private JLabel lblAutocar;
+	private JLabel lblAutocar_1;
+	private JLabel label_1;
+	private Connection c;
+	private Statement st;
+	private JPanel panelSideLayoutContainer;
+	private JPanel panelContentLayoutContainer;
+	
+//chauffeuur
 	private JPanel panelChauffeurSideButton;
-	private JLabel lblAgence;
 	private JPanel panelChauffeurMainContent;
 	private JTable tableChauffeurHistory;
 	private JTable tableChauffeur;
-	private JPanel panelAutocarMainContent;
-	private JButton button;
-	private JButton button_1;
-	private JButton button_2;
-	private JButton button_3;
-	private JLabel lblAutocar_1;
-	private JTable table_1;
-	private JTable table_3;
-	private JPanel panelAgenceMainContent;
-	private JButton button_4;
-	private JButton button_5;
-	private JButton button_6;
-	private JButton button_7;
-	private JLabel label_1;
-	private JTable table_5;
-	private Connection c;
-	private Statement st;
-	private ResultSet rs;
+	private JLabel labelSideChauffeurTitle;
 	private JScrollPane scrollPaneChauffeurTable;
 	private JTextField txtFieldMatriculeChauffeur;
 	private JTextField txtFieldNomChauffeur;
@@ -95,8 +70,49 @@ public class Main {
 	private Component btnChauffeurAjouter;
 	private JToggleButton tglbtnCongeChauffeur;
 	private JScrollPane scrollPaneChauffeurHistoriqueTable;
+    //autocar
+	private JTable tableAutocarHistory;
+	private JPanel panelAutocarMainContent;
+	private JPanel panelAutocarSideButton;
+	private JTextField txtFieldNumimmatriculAutocar;
+	private JTextField txtFieldEtatAutocar;
+	private JScrollPane scrollPaneAutocarHistoriqueTable;
+	private JScrollPane scrollPaneAutocarTable;
+	private JButton btnAutocarModifier;
+	private Component btnAutocarSupprimer;
+	private Component btnAutocarAjouter;
+	private JTable tableAutocar;
+	private JLabel labelSideCarTitle;
 
+	//Agence
+	private JButton btnAgenceModifier;
+	private Component btnAgenceAjouter;
+	private JTable tableAgence;
+	private JPanel panelAgenceSideButton;
+	private JPanel panelAgenceMainContent;
+	private JLabel labelSideAgenceTitle;
+	private JTextField txtFieldNomAgence;
+	private JTextField txtFieldVilleAgence;
+	private JScrollPane scrollPanAgenceTable;
+	//end
+//ligne
+	private JButton btnLigneModifier;
+	private Component btnLigneAjouter;
+	private JTable tableLigne;
+	private JPanel panelLigneSideButton;
+	private JPanel panelLigneMainContent;
+	private JLabel labelSideLigneTitle;
+	private JTextField txtFieldheureRetourLigne;
+	private JTextField txtFieldheuredallerLigne;
+	private JTextField txtFieldKilometrageLigne;
+	private JTextField txtFielddureereposLigne;
+	private JTextField txtFielddureeimmobiliLigne;
+	private JTextField txtFieldIdLigne;
+	private JScrollPane scrollPanLigneTable;
+	private JScrollPane scrollPaneLigneHistoriqueTable;
+	private JTextField textField;
 	/**
+	 * 
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
@@ -115,57 +131,64 @@ public class Main {
 	/**
 	 * Create the application.
 	 */
-	public Main() {
+	public Main(){
 		makeDBConnection();
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
+	void definingColorObjects(){
+		menuColorDefault=new Color(05, 05, 30);
+	}
+	
+	void setFrameGrandFatherContainer() {
 		frameGrandFatherContainer = new JFrame();
 		frameGrandFatherContainer.setBounds(100, 100, 773, 503);
 		frameGrandFatherContainer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameGrandFatherContainer.getContentPane().setLayout(new GridLayout(1, 0, 0, 0));
 		frameGrandFatherContainer.setResizable(false);
-		JPanel frameFatherContainer = new JPanel();
+	}
+	
+	void setFrameFatherContainer() {
+		frameFatherContainer = new JPanel();
 		frameGrandFatherContainer.getContentPane().add(frameFatherContainer);
 		frameFatherContainer.setLayout(null);
+	}
+	
+	//	opening -> Left Layout
+	void setPanelSideLayoutContainer() {
 		
-		JPanel panelSideLayoutContainer = new JPanel();
+		panelSideLayoutContainer = new JPanel();
 		panelSideLayoutContainer.setBounds(0, 0, 199, 474);
 		panelSideLayoutContainer.setBackground(new Color(0, 0, 25));
 		frameFatherContainer.add(panelSideLayoutContainer);
 		panelSideLayoutContainer.setLayout(null);
-		menuColorDefault=new Color(05, 05, 30);
+		
 		panelAutocarSideButton = new JPanel();
 		panelAutocarSideButton.setBackground(menuColorDefault);
 		panelAutocarSideButton.setBounds(0, 163, 199, 43);
-		
 		panelSideLayoutContainer.add(panelAutocarSideButton);
 		panelAutocarSideButton.setLayout(null);
 		
-		lblChauffeur = new JLabel("Chauffeur");
-		lblChauffeur.setBounds(0, 0, 199, 43);
-		panelAutocarSideButton.add(lblChauffeur);
-		lblChauffeur.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblChauffeur.setHorizontalAlignment(SwingConstants.CENTER);
-		lblChauffeur.setForeground(Color.WHITE);
-		lblChauffeur.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
+		labelSideChauffeurTitle = new JLabel("Chauffeur");
+		labelSideChauffeurTitle.setBounds(0, 0, 199, 43);
+		panelAutocarSideButton.add(labelSideChauffeurTitle);
+		labelSideChauffeurTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+		labelSideChauffeurTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		labelSideChauffeurTitle.setForeground(Color.WHITE);
+		labelSideChauffeurTitle.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
 		
 		panelAutocarSideButton.addMouseListener(new java.awt.event.MouseAdapter() {
 			
 			
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	panelAutocarSideButton.setBackground(Color.WHITE);
-		    	lblChauffeur.setForeground(Color.BLACK);
+		    	labelSideChauffeurTitle.setForeground(Color.BLACK);
 		    	
 		    	
 		    }
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		    	panelAutocarSideButton.setBackground(menuColorDefault);
-		    	lblChauffeur.setForeground(Color.WHITE);
+		    	labelSideChauffeurTitle.setForeground(Color.WHITE);
 		    	
 		    }
 		    @Override
@@ -186,12 +209,12 @@ public class Main {
 			
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	panelAgenceSideButton.setBackground(Color.WHITE);
-		    	lblAutocar.setForeground(Color.BLACK);
+		    	labelSideCarTitle.setForeground(Color.BLACK);
 		    	
 		    }
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		    	panelAgenceSideButton.setBackground(menuColorDefault);
-		    	lblAutocar.setForeground(Color.WHITE);
+		    	labelSideCarTitle.setForeground(Color.WHITE);
 		    	
 		    }
 		    @Override
@@ -203,32 +226,32 @@ public class Main {
 		    }
 		});
 		
-		lblAutocar = new JLabel("AutoCar");
-		lblAutocar.setBounds(0, 0, 199, 43);
-		panelAgenceSideButton.add(lblAutocar);
-		lblAutocar.setForeground(Color.WHITE);
-		lblAutocar.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAutocar.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblAutocar.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
+		labelSideCarTitle = new JLabel("AutoCar");
+		labelSideCarTitle.setBounds(0, 0, 199, 43);
+		panelAgenceSideButton.add(labelSideCarTitle);
+		labelSideCarTitle.setForeground(Color.WHITE);
+		labelSideCarTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		labelSideCarTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+		labelSideCarTitle.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
 		
 		panelChauffeurSideButton = new JPanel();
 		panelChauffeurSideButton.setLayout(null);
 		panelChauffeurSideButton.setBackground(menuColorDefault);
 		panelChauffeurSideButton.setBounds(0, 255, 199, 43);
 		panelSideLayoutContainer.add(panelChauffeurSideButton);
-		
+		//panel chaufeur
 		panelChauffeurSideButton.addMouseListener(new java.awt.event.MouseAdapter() {
 			
 			
 		    public void mouseEntered(java.awt.event.MouseEvent evt) {
 		    	panelChauffeurSideButton.setBackground(Color.WHITE);
-		    	lblAgence.setForeground(Color.BLACK);
+		    	labelSideAgenceTitle.setForeground(Color.BLACK);
 		    	
 		    	
 		    }
 		    public void mouseExited(java.awt.event.MouseEvent evt) {
 		    	panelChauffeurSideButton.setBackground(menuColorDefault);
-		    	lblAgence.setForeground(Color.WHITE);
+		    	labelSideAgenceTitle.setForeground(Color.WHITE);
 		    	
 		    }
 		    
@@ -241,24 +264,42 @@ public class Main {
 		    }
 		      
 		});
+		//panel autocar
+
 		
-		lblAgence = new JLabel("Agence");
-		lblAgence.setBounds(0, 0, 199, 43);
-		panelChauffeurSideButton.add(lblAgence);
-		lblAgence.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblAgence.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAgence.setForeground(Color.WHITE);
-		lblAgence.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
+		labelSideAgenceTitle = new JLabel("Agence");
+		labelSideAgenceTitle.setBounds(0, 0, 199, 43);
+		panelChauffeurSideButton.add(labelSideAgenceTitle);
+		labelSideAgenceTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+		labelSideAgenceTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		labelSideAgenceTitle.setForeground(Color.WHITE);
+		labelSideAgenceTitle.setFont(new Font("Segoe UI Semilight", Font.PLAIN, 22));
 		
-		JPanel panelContentLayoutContainer = new JPanel();
+		
+	}
+	
+	// 	closing -> Left Layout 
+	
+	//	opening -> Right Layout//////////////////////////////////////////////////////////////////////////////////////////////
+	void setPanelContentLayoutContainer() {
+		// 	TODO :don't touch ,this auto-generate code
+		// TODO :ne pas toucher its the general layout 
+		panelContentLayoutContainer = new JPanel();
 		panelContentLayoutContainer.setBounds(198, 0, 569, 474);
 		panelContentLayoutContainer.setBackground(new Color(0, 0, 20));
-
 		frameFatherContainer.add(panelContentLayoutContainer);
 		panelContentLayoutContainer.setLayout(null);
+		//end of it
+		//executer ici les fonctions
+		setPanelChauffeurMainContent();
+		setPanelAutocarMainContent();
+		setPanelAgenceMainContent();
+		setPaneligneMainContent();
 		
+	}
+	void setPanelChauffeurMainContent() {
 		panelChauffeurMainContent = new JPanel();
-		panelChauffeurMainContent.setBorder(null);
+		panelChauffeurMainContent.setBorder(new LineBorder(Color.WHITE, 1, true));
 		panelChauffeurMainContent.setBounds(10, 11, 549, 452);
 		panelChauffeurMainContent.setBackground(menuColorDefault);
 		panelContentLayoutContainer.add(panelChauffeurMainContent);
@@ -290,7 +331,7 @@ public class Main {
 		
 		scrollPaneChauffeurHistoriqueTable = new JScrollPane();
 		scrollPaneChauffeurHistoriqueTable.setBackground(Color.WHITE);
-		scrollPaneChauffeurHistoriqueTable.setBounds(341, 54, 198, 275);
+		scrollPaneChauffeurHistoriqueTable.setBounds(341, 99, 198, 230);
 		panelChauffeurMainContent.add(scrollPaneChauffeurHistoriqueTable);
 		
 		tableChauffeurHistory = new JTable();
@@ -301,12 +342,10 @@ public class Main {
 		scrollPaneChauffeurTable.setBackground(Color.WHITE);
 		scrollPaneChauffeurTable.setBounds(10, 54, 330, 275);
 		panelChauffeurMainContent.add(scrollPaneChauffeurTable);
-		
 		tableChauffeur = new JTable();
 		tableChauffeur.setBackground(Color.WHITE);
 		scrollPaneChauffeurTable.setViewportView(tableChauffeur);
 		tableChauffeur.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-
 			public void valueChanged(ListSelectionEvent arg0) {
 				btnChauffeurModifier.setEnabled(true);
 				btnChauffeurSupprimer.setEnabled(true);
@@ -323,6 +362,7 @@ public class Main {
 				
 			}
 	    });
+		
 		colmunIds=new ArrayList<Integer>();
 		btnChauffeurAjouter.addMouseListener(new MouseListener() {
 			
@@ -359,12 +399,12 @@ public class Main {
 				
 			}
 		});
-		
+		//btnChauffeurModifier
 		btnChauffeurModifier.addMouseListener(new MouseListener() {
 			
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 			
 			public void mousePressed(MouseEvent e) {
@@ -387,7 +427,7 @@ public class Main {
 					
 					//Chauffeur.Modifier(c, new Chauffeur(txtMatricule.getText(), txtNom.getText(),tglbtnConge.isSelected()));
 					int indexSelected=tableChauffeur.getSelectedRow();
-					//�Chauffeur.supprimer(c, colmunIds.get(indexSelected));
+					//éChauffeur.supprimer(c, colmunIds.get(indexSelected));
 					Chauffeur.modifier(c, new Chauffeur(txtFieldMatriculeChauffeur.getText(), txtFieldNomChauffeur.getText(),tglbtnCongeChauffeur.isSelected(), colmunIds.get(indexSelected)));
 					showChauffeurTables();
 					txtFieldNomChauffeur.setText("");
@@ -460,86 +500,10 @@ public class Main {
 		tglbtnCongeChauffeur.setBounds(209, 396, 75, 23);
 		panelChauffeurMainContent.add(tglbtnCongeChauffeur);
 		
-		panelAutocarMainContent = new JPanel();
-		panelAutocarMainContent.setBorder(new LineBorder(new Color(255, 255, 255), 1, true));
-		panelAutocarMainContent.setLayout(null);
-		panelAutocarMainContent.setBackground(new Color(5, 5, 30));
-		panelAutocarMainContent.setBounds(10, 11, 549, 452);
-		panelContentLayoutContainer.add(panelAutocarMainContent);
-		
-		button = new JButton("Ajouter");
-		button.setBounds(10, 396, 89, 23);
-		panelAutocarMainContent.add(button);
-		
-		button_1 = new JButton("Supprimer");
-		button_1.setEnabled(false);
-		button_1.setBounds(155, 396, 89, 23);
-		panelAutocarMainContent.add(button_1);
-		
-		button_2 = new JButton("Modifier");
-		button_2.setEnabled(false);
-		button_2.setBounds(305, 396, 89, 23);
-		panelAutocarMainContent.add(button_2);
-		
-		button_3 = new JButton("Histoire");
-		button_3.setEnabled(false);
-		button_3.setBounds(450, 396, 89, 23);
-		panelAutocarMainContent.add(button_3);
-		
-		lblAutocar_1 = new JLabel("Autocar");
-		lblAutocar_1.setHorizontalTextPosition(SwingConstants.CENTER);
-		lblAutocar_1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAutocar_1.setForeground(Color.WHITE);
-		lblAutocar_1.setFont(new Font("Segoe UI Semilight", Font.BOLD, 26));
-		lblAutocar_1.setBounds(0, 0, 549, 43);
-		panelAutocarMainContent.add(lblAutocar_1);
-		
-		table_1 = new JTable();
-		table_1.setBounds(342, 54, 197, 275);
-		panelAutocarMainContent.add(table_1);
-		
-		table_3 = new JTable();
-		table_3.setBounds(10, 54, 330, 275);
-		panelAutocarMainContent.add(table_3);
-		
-		panelAgenceMainContent = new JPanel();
-		panelAgenceMainContent.setLayout(null);
-		panelAgenceMainContent.setBorder(new LineBorder(new Color(255, 255, 255), 2, true));
-		panelAgenceMainContent.setBackground(new Color(5, 5, 30));
-		panelAgenceMainContent.setBounds(10, 11, 549, 452);
-		panelContentLayoutContainer.add(panelAgenceMainContent);
-		
-		button_4 = new JButton("Ajouter");
-		button_4.setBounds(10, 396, 89, 23);
-		panelAgenceMainContent.add(button_4);
-		
-		button_5 = new JButton("Supprimer");
-		button_5.setEnabled(false);
-		button_5.setBounds(155, 396, 89, 23);
-		panelAgenceMainContent.add(button_5);
-		
-		button_6 = new JButton("Modifier");
-		button_6.setEnabled(false);
-		button_6.setBounds(305, 396, 89, 23);
-		panelAgenceMainContent.add(button_6);
-		
-		button_7 = new JButton("Histoire");
-		button_7.setEnabled(false);
-		button_7.setBounds(450, 396, 89, 23);
-		panelAgenceMainContent.add(button_7);
-		
-		label_1 = new JLabel("Agence");
-		label_1.setHorizontalTextPosition(SwingConstants.CENTER);
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setForeground(Color.WHITE);
-		label_1.setFont(new Font("Segoe UI Semilight", Font.BOLD, 26));
-		label_1.setBounds(0, 0, 549, 43);
-		panelAgenceMainContent.add(label_1);
-		
-		table_5 = new JTable();
-		table_5.setBounds(10, 54, 529, 275);
-		panelAgenceMainContent.add(table_5);
-
+		textField = new JTextField();
+		textField.setBounds(412, 52, 86, 20);
+		panelChauffeurMainContent.add(textField);
+		textField.setColumns(10);
 		btnChauffeurSupprimer.addMouseListener(new MouseListener() {
 			
 			public void mouseReleased(MouseEvent e) {
@@ -573,10 +537,676 @@ public class Main {
 				chauffeurTableClearSelection();
 			}
 		});
+
+	showChauffeurTables();
+	}
+	///////////////////////////////////////////////////***********************panel aotocar start
+	void setPanelAutocarMainContent() {
+		panelAutocarMainContent = new JPanel();
+		panelAutocarMainContent.setBorder(new LineBorder(Color.WHITE, 1, true));
+		panelAutocarMainContent.setBounds(10, 11, 549, 452);
+		panelAutocarMainContent.setBackground(menuColorDefault);
+		panelContentLayoutContainer.add(panelAutocarMainContent);
+		panelAutocarMainContent.setLayout(null);
 		
-		showChauffeurTables();
+		btnAutocarAjouter = new JButton("Ajouter");
+		btnAutocarAjouter.setEnabled(false);
+		
+		btnAutocarAjouter.setBounds(10, 340, 89, 23);
+		panelAutocarMainContent.add(btnAutocarAjouter);
+		
+		btnAutocarSupprimer = new JButton("Supprimer");
+		btnAutocarSupprimer.setEnabled(false);
+		btnAutocarSupprimer.setBounds(235, 340, 89, 23);
+		panelAutocarMainContent.add(btnAutocarSupprimer);
+		
+		btnAutocarModifier = new JButton("Modifier");
+		btnAutocarModifier.setEnabled(false);
+		btnAutocarModifier.setBounds(450, 340, 89, 23);
+		panelAutocarMainContent.add(btnAutocarModifier);
+		
+		JLabel labelAutocarTitle = new JLabel("Autocar");
+		labelAutocarTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+		labelAutocarTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		labelAutocarTitle.setForeground(Color.WHITE);
+		labelAutocarTitle.setFont(new Font("Segoe UI Semilight", Font.BOLD, 26));
+		labelAutocarTitle.setBounds(0, 0, 549, 43);
+		panelAutocarMainContent.add(labelAutocarTitle);
+		
+		scrollPaneAutocarHistoriqueTable = new JScrollPane();
+		scrollPaneAutocarHistoriqueTable.setBackground(Color.WHITE);
+		scrollPaneAutocarHistoriqueTable.setBounds(341, 54, 198, 275);
+		panelAutocarMainContent.add(scrollPaneAutocarHistoriqueTable);
+		
+		tableAutocarHistory = new JTable();
+		tableAutocarHistory.setBounds(342, 54, 197, 275);
+		scrollPaneAutocarHistoriqueTable.setViewportView(tableAutocarHistory);
+		
+		scrollPaneAutocarTable = new JScrollPane();
+		scrollPaneAutocarTable.setBackground(Color.WHITE);
+		scrollPaneAutocarTable.setBounds(10, 54, 330, 275);
+		panelAutocarMainContent.add(scrollPaneAutocarTable);
+		tableAutocar = new JTable();
+		tableAutocar.setBackground(Color.WHITE);
+		scrollPaneAutocarTable.setViewportView(tableAutocar);
+		tableAutocar.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent arg0) {
+				btnAutocarModifier.setEnabled(true);
+				btnAutocarSupprimer.setEnabled(true);
+				int indexSelected=tableAutocar.getSelectedRow();
+				if(((DefaultTableModel)tableAutocar.getModel()).getColumnCount()>=1 && indexSelected>0) {
+					String matricule= (String) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 0);
+					String nom= (String) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 1);
+					boolean conge= (Boolean) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 2);
+					
+					txtFieldEtatAutocar.setText(matricule);
+					txtFieldNumimmatriculAutocar.setText(nom);
+				}
+				
+			}
+	    });
+		
+		colmunIds=new ArrayList<Integer>();
+		btnAutocarAjouter.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseClicked(MouseEvent e) {
+				if(txtFieldNumimmatriculAutocar.getText().trim().length()>0 && txtFieldEtatAutocar.getText().trim().length()>0) {
+					showAutocarTables();
+					txtFieldNumimmatriculAutocar.setText("");
+					txtFieldEtatAutocar.setText("");
+					AutoCarTableClearSelection();
+					
+				}
+				
+				
+			}
+		});
+		//btnAutocarModifier
+		btnAutocarModifier.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+			
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseClicked(MouseEvent e) {
+				if(txtFieldNumimmatriculAutocar.getText().trim().length()>0 && txtFieldEtatAutocar.getText().trim().length()>0) {
+					
+					//AutoCar.Modifier(c, new AutoCar(txtMatricule.getText(), txtNom.getText(),tglbtnConge.isSelected()));
+					int indexSelected=tableAutocar.getSelectedRow();
+					//éAutoCar.supprimer(c, colmunIds.get(indexSelected));
+					AutoCar.modifier(c, new AutoCar("null", Integer.valueOf(txtFieldNumimmatriculAutocar.getText(), colmunIds.get(indexSelected)));
+					showAutocarTables();
+					txtFieldNumimmatriculAutocar.setText("");
+					txtFieldEtatAutocar.setText("");
+					AutoCarTableClearSelection();
+					
+				}
+				
+				
+			}
+		});
+		txtFieldEtatAutocar = new JTextField();
+		txtFieldEtatAutocar.setToolTipText("Matricule ici");
+		txtFieldEtatAutocar.setBounds(10, 396, 89, 23);
+		txtFieldEtatAutocar.addKeyListener(new KeyListener() {
+			
+			public void keyTyped(KeyEvent arg0) {
+				System.out.println("txtNom");
+				if(txtFieldNumimmatriculAutocar.getText().trim().length()>0 && txtFieldEtatAutocar.getText().trim().length()>0){
+					btnAutocarAjouter.setEnabled(true);
+				}else {
+					btnAutocarAjouter.setEnabled(false);
+				}
+				
+			}
+			
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyPressed(KeyEvent arg0) {
+				
+				
+			}
+		});
+		panelAutocarMainContent.add(txtFieldEtatAutocar);
+		txtFieldEtatAutocar.setColumns(10);
+		
+		txtFieldNumimmatriculAutocar = new JTextField();
+		txtFieldNumimmatriculAutocar.setToolTipText("Nom ici");
+		txtFieldNumimmatriculAutocar.setColumns(10);
+		txtFieldNumimmatriculAutocar.setBounds(109, 396, 89, 23);
+		txtFieldNumimmatriculAutocar.addKeyListener(new KeyListener() {
+			
+			public void keyTyped(KeyEvent arg0) {
+				System.out.println("txtNom");
+				if(txtFieldEtatAutocar.getText().trim().length()>0 && txtFieldEtatAutocar.getText().trim().length()>0) {
+					btnAutocarAjouter.setEnabled(true);
+				}else {
+					btnAutocarAjouter.setEnabled(false);
+				}
+				
+			}
+			
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyPressed(KeyEvent arg0) {
+				
+				
+			}
+		});
+
+		panelAutocarMainContent.add(txtFieldNumimmatriculAutocar);
+		
+		
+		btnAutocarSupprimer.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseClicked(MouseEvent e) {
+				int indexSelected=tableAutocar.getSelectedRow();
+				//System.out.println(data.get(indexSelected));
+				String matricule= (String) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 0);
+				String nom= (String) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 1);
+				boolean conge= (Boolean) ((DefaultTableModel)tableAutocar.getModel()).getValueAt(indexSelected, 2);
+				AutoCar.supprimer(c, new AutoCar(nImmatriculation,etat));
+				showAutocarTables();
+				AutoCarTableClearSelection();
+			}
+		});
+
+	showAutocarTables();
 	}
 	
+
+	//end of aotocar table
+	///////////////////////////////////////////////////***********************panel Ligne start
+	void setPaneligneMainContent() {
+		panelLigneMainContent = new JPanel();
+		panelLigneMainContent.setBorder(new LineBorder(Color.WHITE, 1, true));
+		panelLigneMainContent.setBounds(10, 11, 549, 452);
+		panelLigneMainContent.setBackground(menuColorDefault);
+		panelContentLayoutContainer.add(panelLigneMainContent);
+		panelLigneMainContent.setLayout(null);
+		
+		btnLigneAjouter = new JButton("Ajouter");
+		btnLigneAjouter.setEnabled(false);
+		
+		btnLigneAjouter.setBounds(10, 340, 89, 23);
+		panelLigneMainContent.add(btnLigneAjouter);
+		
+	
+		panelLigneMainContent.add(btnAutocarSupprimer);
+		
+		btnLigneModifier = new JButton("Modifier");
+		btnLigneModifier.setEnabled(false);
+		btnLigneModifier.setBounds(450, 340, 89, 23);
+		panelLigneMainContent.add(btnLigneModifier);
+		
+		JLabel labelLigneTitle = new JLabel("Ligne");
+		labelLigneTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+		labelLigneTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		labelLigneTitle.setForeground(Color.WHITE);
+		labelLigneTitle.setFont(new Font("Segoe UI Semilight", Font.BOLD, 26));
+		labelLigneTitle.setBounds(0, 0, 549, 43);
+		panelLigneMainContent.add(labelLigneTitle);
+		
+		scrollPaneLigneHistoriqueTable = new JScrollPane();
+		scrollPaneLigneHistoriqueTable.setBackground(Color.WHITE);
+		scrollPaneLigneHistoriqueTable.setBounds(341, 54, 198, 275);
+		panelLigneMainContent.add(scrollPaneLigneHistoriqueTable);
+		
+		tableligneHistory = new JTable();
+		tableligneHistory.setBounds(342, 54, 197, 275);
+		scrollPaneLigneHistoriqueTable.setViewportView(tableligneHistory);
+		
+		scrollPanLigneTable = new JScrollPane();
+		scrollPanLigneTable.setBackground(Color.WHITE);
+		scrollPanLigneTable.setBounds(10, 54, 330, 275);
+		panelLigneMainContent.add(scrollPanLigneTable);
+		tableLigne = new JTable();
+		tableLigne.setBackground(Color.WHITE);
+		scrollPanLigneTable.setViewportView(tableLigne);
+		tableLigne.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent arg0) {
+				btnLigneModifier.setEnabled(true);
+				int indexSelected=tableLigne.getSelectedRow();
+				if(((DefaultTableModel)tableLigne.getModel()).getColumnCount()>=1 && indexSelected>0) {
+					String matricule= (String) ((DefaultTableModel)tableLigne.getModel()).getValueAt(indexSelected, 0);
+					String nom= (String) ((DefaultTableModel)tableLigne.getModel()).getValueAt(indexSelected, 1);
+					boolean conge= (Boolean) ((DefaultTableModel)tableLigne.getModel()).getValueAt(indexSelected, 2);
+					
+					txtFieldheureRetourLigne.setText(matricule);
+					txtFieldIdLigne.setText(nom);
+				}
+				
+			}
+	    });
+		
+		colmunIds=new ArrayList<Integer>();
+		btnLigneAjouter.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseClicked(MouseEvent e) {
+				if(txtFieldIdLigne.getText().trim().length()>0 
+				&& txtFieldheureRetourLigne.getText().trim().length()>0
+				&& txtFieldKilometrageLigne.getText().trim().length()>0
+				&& txtFielddureeimmobiliLigne.getText().trim().length()>0
+				&& txtFieldheuredallerLigne.getText().trim().length()>0) {
+					Ligne.ajouter(c, new Ligne(txtFieldheureRetourLigne.getText(), txtFieldIdLigne.getText()));
+					showLigneTables();
+					txtFieldIdLigne.setText("");
+					txtFieldheureRetourLigne.setText("");
+					LingneTableClearSelection();
+					
+				}
+				
+				
+			}
+		});
+		//btnLigneModifier
+		btnLigneModifier.addMouseListener(new MouseListener() {
+			
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+			
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void mouseClicked(MouseEvent e) {
+				if(txtFieldIdLigne.getText().trim().length()>0 && txtFieldheureRetourLigne.getText().trim().length()>0) {
+					
+					//Ligne.Modifier(c, new Ligne(txtMatricule.getText(), txtNom.getText(),tglbtnConge.isSelected()));
+					int indexSelected=tableLigne.getSelectedRow();
+					//éLigne.supprimer(c, colmunIds.get(indexSelected));
+					showLigneTables();
+					txtFieldIdLigne.setText("");
+					txtFieldheureRetourLigne.setText("");
+					LingneTableClearSelection();
+					
+				}
+				
+				
+			}
+		});
+		txtFieldheureRetourLigne = new JTextField();
+		txtFieldheureRetourLigne.setToolTipText("Matricule ici");
+		txtFieldheureRetourLigne.setBounds(10, 396, 89, 23);
+		txtFieldheureRetourLigne.addKeyListener(new KeyListener() {
+			
+			public void keyTyped(KeyEvent arg0) {
+				System.out.println("txtNom");
+				if(txtFieldIdLigne.getText().trim().length()>0 && txtFieldheureRetourLigne.getText().trim().length()>0){
+					btnLigneAjouter.setEnabled(true);
+				}else {
+					btnLigneAjouter.setEnabled(false);
+				}
+				
+			}
+			
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyPressed(KeyEvent arg0) {
+				
+				
+			}
+		});
+		panelLigneMainContent.add(txtFieldheureRetourLigne);
+		txtFieldheureRetourLigne.setColumns(10);
+		
+		txtFieldIdLigne = new JTextField();
+		txtFieldIdLigne.setToolTipText("Nom ici");
+		txtFieldIdLigne.setColumns(10);
+		txtFieldIdLigne.setBounds(109, 396, 89, 23);
+		txtFieldIdLigne.addKeyListener(new KeyListener() {
+			
+			public void keyTyped(KeyEvent arg0) {
+				System.out.println("txtNom");
+				if(txtFieldheureRetourLigne.getText().trim().length()>0 && txtFieldheureRetourLigne.getText().trim().length()>0) {
+					btnLigneAjouter.setEnabled(true);
+				}else {
+					btnLigneAjouter.setEnabled(false);
+				}
+				
+			}
+			
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void keyPressed(KeyEvent arg0) {
+				
+				
+			}
+		});
+
+		panelLigneMainContent.add(txtFieldIdLigne);
+		
+		
+	
+	showLigneTables();
+	}
+	
+	
+	///////////////////////******************************************agenceSetpann*************************/////////////
+	void setPanelAgenceMainContent() {
+		panelAgenceMainContent = new JPanel();
+	panelAgenceMainContent.setBorder(new LineBorder(Color.WHITE, 1, true));
+	panelAgenceMainContent.setBounds(10, 11, 549, 452);
+	panelAgenceMainContent.setBackground(menuColorDefault);
+	panelContentLayoutContainer.add(panelAgenceMainContent);
+	panelAgenceMainContent.setLayout(null);
+	
+	btnAgenceAjouter = new JButton("Ajouter");
+	btnAgenceAjouter.setEnabled(false);
+	
+	btnAgenceAjouter.setBounds(10, 340, 89, 23);
+	panelAgenceMainContent.add(btnAgenceAjouter);
+	
+	btnAutocarSupprimer = new JButton("Supprimer");
+	btnAutocarSupprimer.setEnabled(false);
+	btnAutocarSupprimer.setBounds(235, 340, 89, 23);
+	panelAgenceMainContent.add(btnAutocarSupprimer);
+	
+	btnAgenceModifier = new JButton("Modifier");
+	btnAgenceModifier.setEnabled(false);
+	btnAgenceModifier.setBounds(450, 340, 89, 23);
+	panelAgenceMainContent.add(btnAgenceModifier);
+	
+	JLabel labelAgenceTitle = new JLabel("Agence");
+	labelAgenceTitle.setHorizontalTextPosition(SwingConstants.CENTER);
+	labelAgenceTitle.setHorizontalAlignment(SwingConstants.CENTER);
+	labelAgenceTitle.setForeground(Color.WHITE);
+	labelAgenceTitle.setFont(new Font("Segoe UI Semilight", Font.BOLD, 26));
+	labelAgenceTitle.setBounds(0, 0, 549, 43);
+	panelAgenceMainContent.add(labelAgenceTitle);
+	
+	
+	scrollPanAgenceTable = new JScrollPane();
+	scrollPanAgenceTable.setBackground(Color.WHITE);
+	scrollPanAgenceTable.setBounds(10, 54, 330, 275);
+	panelAgenceMainContent.add(scrollPanAgenceTable);
+	tableAgence = new JTable();
+	tableAgence.setBackground(Color.WHITE);
+	scrollPanAgenceTable.setViewportView(tableAgence);
+	tableAgence.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+		public void valueChanged(ListSelectionEvent arg0) {
+			btnAgenceModifier.setEnabled(true);
+			int indexSelected=tableAgence.getSelectedRow();
+			if(((DefaultTableModel)tableAgence.getModel()).getColumnCount()>=1 && indexSelected>0) {
+				String matricule= (String) ((DefaultTableModel)tableAgence.getModel()).getValueAt(indexSelected, 0);
+				String nom= (String) ((DefaultTableModel)tableAgence.getModel()).getValueAt(indexSelected, 1);
+				boolean conge= (Boolean) ((DefaultTableModel)tableAgence.getModel()).getValueAt(indexSelected, 2);
+				
+				txtFieldVilleAgence.setText(matricule);
+				txtFieldNomAgence.setText(nom);
+			}
+			
+		}
+    });
+	
+	colmunIds=new ArrayList<Integer>();
+	btnAgenceAjouter.addMouseListener(new MouseListener() {
+		
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseClicked(MouseEvent e) {
+			if(txtFieldNomAgence.getText().trim().length()>0 && txtFieldVilleAgence.getText().trim().length()>0) {
+				Agence.ajouter(c, new Agence(txtFieldVilleAgence.getText(), txtFieldNomAgence.getText(),tglbtnCongeAgence.isSelected()));
+				showAgenceTables();
+				txtFieldNomAgence.setText("");
+				txtFieldVilleAgence.setText("");
+				AgenceTableClearSelection();
+				
+			}
+			
+			
+		}
+	});
+	//btnAgenceModifier
+	btnAgenceModifier.addMouseListener(new MouseListener() {
+		
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+		
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseClicked(MouseEvent e) {
+			if(txtFieldNomAgence.getText().trim().length()>0 && txtFieldVilleAgence.getText().trim().length()>0) {
+				
+				//Agence.Modifier(c, new Agence(txtMatricule.getText(), txtNom.getText(),tglbtnConge.isSelected()));
+				int indexSelected=tableAgence.getSelectedRow();
+				//éAgence.supprimer(c, colmunIds.get(indexSelected));
+				Agence.modifier(c, new Agence(txtFieldVilleAgence.getText(), txtFieldNomAgence.getText(), colmunIds.get(indexSelected)));
+				showAgenceTables();
+				txtFieldNomAgence.setText("");
+				txtFieldVilleAgence.setText("");
+				AgenceTableClearSelection();
+				
+			}
+			
+			
+		}
+	});
+	txtFieldVilleAgence = new JTextField();
+	txtFieldVilleAgence.setToolTipText("Matricule ici");
+	txtFieldVilleAgence.setBounds(10, 396, 89, 23);
+	txtFieldVilleAgence.addKeyListener(new KeyListener() {
+		
+		public void keyTyped(KeyEvent arg0) {
+			System.out.println("txtNom");
+			if(txtFieldNomAgence.getText().trim().length()>0 && txtFieldVilleAgence.getText().trim().length()>0){
+				btnAgenceAjouter.setEnabled(true);
+			}else {
+				btnAgenceAjouter.setEnabled(false);
+			}
+			
+		}
+		
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void keyPressed(KeyEvent arg0) {
+			
+			
+		}
+	});
+	panelAgenceMainContent.add(txtFieldVilleAgence);
+	txtFieldVilleAgence.setColumns(10);
+	
+	txtFieldNomAgence = new JTextField();
+	txtFieldNomAgence.setToolTipText("Nom ici");
+	txtFieldNomAgence.setColumns(10);
+	txtFieldNomAgence.setBounds(109, 396, 89, 23);
+	txtFieldNomAgence.addKeyListener(new KeyListener() {
+		
+		public void keyTyped(KeyEvent arg0) {
+			System.out.println("txtNom");
+			if(txtFieldVilleAgence.getText().trim().length()>0 && txtFieldVilleAgence.getText().trim().length()>0) {
+				btnAgenceAjouter.setEnabled(true);
+			}else {
+				btnAgenceAjouter.setEnabled(false);
+			}
+			
+		}
+		
+		public void keyReleased(KeyEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void keyPressed(KeyEvent arg0) {
+			
+			
+		}
+	});
+
+	panelAgenceMainContent.add(txtFieldNomAgence);
+	
+	
+
+showAgenceTables();
+}
+
+	
+
+	///////////////////////////////////////////////////////////////////*****************//////////////////////////////////
+	//void setPanelChauffeurMainContent() {}
+	// 	closing -> Right Layout 
+	
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	
+	private void initialize() {
+		definingColorObjects();
+		
+		// TODO :don't touch, this auto generated code
+		setFrameGrandFatherContainer();
+		setFrameFatherContainer();
+		
+		// role : en:set and display Side Layout elements
+		// role : fr:mettre et afficher Menu Layout elements
+		setPanelSideLayoutContainer();
+		
+		// role : en:set and display Content Layout elements
+		// role : fr:mettre et afficher jTable(center) Layout elements
+		setPanelContentLayoutContainer();
+		
+
+	}
+	
+	// role : en: transform ResultSet into DefaultTableModel
 	public static DefaultTableModel buildTableModel(ResultSet rs)
 	        throws SQLException {
 		
@@ -586,7 +1216,7 @@ public class Main {
 	    Vector<String> columnNames = new Vector<String>();
 	    int columnCount = metaData.getColumnCount();
 	    for (int column = 1; column <= columnCount; column++){
-	    	if(column == 2){
+	    	if(column == 1){
 	    		System.out.println("column"+column);
         	}else {
         		columnNames.add(metaData.getColumnName(column));
@@ -619,7 +1249,7 @@ public class Main {
 	    return new DefaultTableModel(data, columnNames);
 
 	}
-	
+	// role :en :establish connection with the database
 	private void makeDBConnection() {
 		try {
 			// load database driver
@@ -642,12 +1272,46 @@ public class Main {
 		
 	}
 	
+	// role :en :display chauffeur table content from database in chauffeur table
+	//affichage table chauffeur
+	//SOS////////////SOS////////////////////////////////////////////**********//////////////////////////////
 	public void showChauffeurTables() {
 		try {
-			//System.out.println("rs.toString()="+rs.toString());
 			myModel= buildTableModel(Chauffeur.selectAll(c, st));
-			tableChauffeur.setModel(myModel);
-			
+			tableChauffeur.setModel(myModel);			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+///autocar show table
+	public void showAutocarTables() {
+		try {
+			myModel= buildTableModel(AutoCar.selectAll(c, st));
+			tableAutocar.setModel(myModel);			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	////agence table
+	public void showAgenceTables() {
+		try {
+			myModel= buildTableModel(Agence.selectAll(c, st));
+			tableAgence.setModel(myModel);			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+////Ligne Show  table
+	public void showLigneTables() {
+		try {
+			myModel= buildTableModel(Ligne.selectAll(c, st));
+			tableLigne.setModel(myModel);			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -655,10 +1319,33 @@ public class Main {
 
 	}
 	// role :en :clear selected chauffeur table row and set all chauffeur buttons to default
+	// LE ROLE/ KATRED LES BUTTON PAR DEFAUT 
+	////////////////////// aji hena//////////////////////////////////////////////////////////////////////
 	void chauffeurTableClearSelection(){
 		tableChauffeur.clearSelection();
 		btnChauffeurAjouter.setEnabled(false);
 		btnChauffeurModifier.setEnabled(false);
 		btnChauffeurSupprimer.setEnabled(false);
+	}
+////autocar enabled button/////////////////////////////
+	void AutoCarTableClearSelection(){
+		tableAutocar.clearSelection();
+		btnAutocarAjouter.setEnabled(false);
+		btnAutocarModifier.setEnabled(false);
+		btnAutocarSupprimer.setEnabled(false);
+	}
+////Agennce enabled button/////////////////////////////
+
+	void AgenceTableClearSelection(){
+		tableAgence.clearSelection();
+		btnAgenceAjouter.setEnabled(false);
+		btnAgenceModifier.setEnabled(false);
+	}
+////LIgne enabled button/////////////////////////////
+
+	void LingneTableClearSelection(){
+		tableLigne.clearSelection();
+		btnLigneAjouter.setEnabled(false);
+		btnLigneModifier.setEnabled(false);
 	}
 }
